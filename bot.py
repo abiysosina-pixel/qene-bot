@@ -304,7 +304,7 @@ async def forward_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
             from_chat_id=update.message.chat_id,
             message_id=update.message.message_id
         )
-        await update.message.reply_text("መረጃዎ/የክፍያ ስክሪንሾትዎ ለኦነሩ ደርሷል! በቅርቡ ይገናኙዎታል።")
+        await update.message.reply_text("የክፍያ ደረሰኝዎ ለመዝጋቢው ደርሷል። በፍጥነት መልስ ይላካል። እናመሰግናለን")
     except Exception:
         await update.message.reply_text("መረጃውን መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።")
 
