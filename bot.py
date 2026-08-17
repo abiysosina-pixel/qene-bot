@@ -1,4 +1,8 @@
 import logging
+import json
+import os
+from datetime import time
+import pytz
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -20,9 +24,29 @@ BOT_TOKEN = "8866935970:AAGr1LED7cmOpgvaSZbTdlcbQ-ouyxvg99s"
 # 👉 የኦነሩን (የአድሚኑን) Telegram Chat ID እዚህ አስገባ
 ADMIN_CHAT_ID = 6720784698
 
+# የተጠቃሚዎችን ID መያዣ ፋይል
+USERS_FILE = "users.json"
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r") as f:
+            try:
+                return set(json.load(f))
+            except Exception:
+                return set()
+    return set()
+
+def save_user(user_id):
+    users = load_users()
+    if user_id not in users:
+        users.add(user_id)
+        with open(USERS_FILE, "w") as f:
+            json.dump(list(users), f)
+
 # 1. /start ሲባል የሚመጣ መነሻ
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
+    save_user(user.id) # ተጠቃሚውን ለብሮድካስት መዝግብ
     
     try:
         await context.bot.send_message(
@@ -52,18 +76,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     data = query.data
 
-    # ሀ. "ከኢትዮጵያ ውጭ" ሲመረጥ
     if data == 'loc_abroad':
         text_abroad = (
             "ደውሉ ወይም ኢንቦክስ አድርጉ\n\n"
             "📞 Phone Number: 0915642585\n"
-            "💬 Telegram Username: @pawli37"
+            "💬 Telegram Username: @awuli37"
         )
         keyboard = [[InlineKeyboardButton("⬅️ ተመለስ", callback_data='back_to_start')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=text_abroad, reply_markup=reply_markup)
 
-    # ለ. "ኢትዮጵያ ውስጥ" ሲመረጥ
     elif data == 'loc_ethiopia':
         keyboard = [
             [InlineKeyboardButton("በመጀመሪያ የሚማሩትን ይምረጡ", callback_data='start_learning')]
@@ -71,7 +93,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text="አሁን እንዴት ልጀምር", reply_markup=reply_markup)
 
-    # ሐ. "በመጀመሪያ የሚማሩትን ይምረጡ" ሲነካ
     elif data == 'start_learning':
         keyboard = [
             [InlineKeyboardButton("ቅኔ", callback_data='qene')],
@@ -82,7 +103,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text="በመጀመሪያ የሚማሩትን ይምረጡ", reply_markup=reply_markup)
 
-    # መ. "ቅኔ" ሲመረጥ
     elif data == 'qene':
         qene_text = (
             "ቅኔ ውስጥ የሚማሩት፦\n\n"
@@ -102,7 +122,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=qene_text, reply_markup=reply_markup)
 
-    # ሠ. "ንባብ" ሲመረጥ
     elif data == 'nibab':
         nibab_text = (
             "ንባብ ውስጥ የሚማሩት፦\n\n"
@@ -124,7 +143,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=nibab_text, reply_markup=reply_markup)
 
-    # ረ. "ባሕረ ሃሳብ" ሲመረጥ
     elif data == 'bahre_hasab':
         bahre_text = (
             "ባሕረ ሃሳብ ውስጥ የሚማሩት፦\n\n"
@@ -147,7 +165,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=bahre_text, reply_markup=reply_markup)
 
-    # ሰ. "ግእዝ ቋንቋ" ሲመረጥ
     elif data == 'geez':
         geez_text = (
             "ግእዝ ቋንቋ ውስጥ የሚማሩት፦\n\n"
@@ -170,7 +187,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=geez_text, reply_markup=reply_markup)
 
-    # ሸ. የቅኔ የመመዝገቢያ እና የክፍያ ፎርም
     elif data == 'qene_registration':
         qene_form_text = (
             "📜 **ቅኔ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
@@ -202,7 +218,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=qene_form_text, parse_mode='Markdown', reply_markup=reply_markup)
 
-    # ቀ. የንባብ የመመዝገቢያ እና የክፍያ ፎርም
     elif data == 'nibab_registration':
         nibab_form_text = (
             "📖 **ንባብ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
@@ -234,7 +249,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=nibab_form_text, parse_mode='Markdown', reply_markup=reply_markup)
 
-    # በ. የባሕረ ሃሳብ የመመዝገቢያ እና የክፍያ ፎርም
     elif data == 'bahre_registration':
         bahre_form_text = (
             "🗓 **ባሕረ ሃሳብ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
@@ -263,7 +277,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=bahre_form_text, parse_mode='Markdown', reply_markup=reply_markup)
 
-    # ተ. የግዕዝ ቋንቋ የመመዝገቢያ እና የክፍያ ፎርም
     elif data == 'geez_registration':
         geez_form_text = (
             "🔤 **ግዕዝ ቋንቋ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
@@ -292,19 +305,52 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=geez_form_text, parse_mode='Markdown', reply_markup=reply_markup)
 
-    # ቸ. ወደ መጀመሪያው የመመለሻ
     elif data == 'back_to_start':
         await start(update, context)
 
-# 3. ተጠቃሚው የሚልከውን መረጃ (ጽሁፍ/ስክሪንሾት) ቀጥታ ወደ ኦነሩ Forward ማድረግ
+# 3. በየቀኑ አውቶማቲክ የሚላክ የመጽሐፍ ማስታወቂያ
+async def send_daily_ad(context: ContextTypes.DEFAULT_TYPE):
+    users = load_users()
+    ad_text = (
+        "📚 **የመጽሐፍ ማስታወቂያ**\n\n"
+        "የመምህሩ አዲስ መጽሐፍ ለሽያጭ ቀርቧል! ለመግዛትና ለበለጠ መረጃ በስልክ ቁጥር 0915642585 ይደውሉ ወይም @awuli37 ያግኙን።"
+    )
+    for u_id in users:
+        try:
+            await context.bot.send_message(chat_id=u_id, text=ad_text, parse_mode='Markdown')
+        except Exception:
+            pass
+
+# 4. የመምህሩ/የአድሚኑ አዲስ ማስታወቂያ መላኪያ command (/broadcast)
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_CHAT_ID:
+        return
+    
+    msg = update.message.text.replace("/broadcast", "").strip()
+    if not msg:
+        await update.message.reply_text("እባክዎን ከመልእክቱ በፊት /broadcast ብለው ጽፈው ይላኩ።\nምሳሌ፦ `/broadcast አዲስ ማስታወቂያ...`", parse_mode='Markdown')
+        return
+
+    users = load_users()
+    count = 0
+    for u_id in users:
+        try:
+            await context.bot.send_message(chat_id=u_id, text=msg)
+            count += 1
+        except Exception:
+            pass
+    await update.message.reply_text(f"ማስታወቂያው ለ {count} ተጠቃሚዎች ተልኳል!")
+
+# 5. ተጠቃሚው የሚልከውን መረጃ (ጽሁፍ/ስክሪንሾት) ቀጥታ ወደ ኦነሩ Forward ማድረግ
 async def forward_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    save_user(update.effective_user.id)
     try:
         await context.bot.forward_message(
             chat_id=ADMIN_CHAT_ID,
             from_chat_id=update.message.chat_id,
             message_id=update.message.message_id
         )
-        await update.message.reply_text("የክፍያ ደረሰኝዎ ለመዝጋቢው ደርሷል። በፍጥነት መልስ ይላካል። እናመሰግናለን")
+        await update.message.reply_text("መረጃዎ/የክፍያ ስክሪንሾትዎ ለኦነሩ ደርሷል! በቅርቡ ይገናኙዎታል።")
     except Exception:
         await update.message.reply_text("መረጃውን መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።")
 
@@ -312,8 +358,14 @@ def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("broadcast", broadcast))
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, forward_to_admin))
+
+    # በየቀኑ በኢትዮጵያ ሰዓት አቆጣጠር ጧት 3:00 ሰዓት (UTC 6:00 AM) አውቶማቲክ ማስታወቂያ መላኪያ Schedule
+    job_queue = app.job_queue
+    eat_tz = pytz.timezone('Africa/Addis_Ababa')
+    job_queue.run_daily(send_daily_ad, time=time(hour=9, minute=0, second=0, tzinfo=eat_tz))
 
     print("ቦቱ በስኬት ስራ ጀምሯል...")
     app.run_polling()
