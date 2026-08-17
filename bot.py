@@ -3,6 +3,8 @@ import json
 import os
 from datetime import time
 import pytz
+from threading import Thread
+from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -13,18 +15,31 @@ from telegram.ext import (
     ContextTypes,
 )
 
-# ሎግ ማስተካከያ
+# 1. Render Port እንዳይዘጋ የሚያደርግ Web Server
+app_flask = Flask('')
+
+@app_flask.route('/')
+def home():
+    return "Bot is running live!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 8080))
+    app_flask.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run_flask)
+    t.daemon = True
+    t.start()
+
+# 2. ሎግ ማስተካከያ
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
 BOT_TOKEN = "8866935970:AAGr1LED7cmOpgvaSZbTdlcbQ-ouyxvg99s"
-
-# 👉 የኦነሩን (የአድሚኑን) Telegram Chat ID እዚህ አስገባ
 ADMIN_CHAT_ID = 6720784698
 
-# የተጠቃሚዎችን ID መያዣ ፋይል
 USERS_FILE = "users.json"
 
 def load_users():
@@ -43,20 +58,11 @@ def save_user(user_id):
         with open(USERS_FILE, "w") as f:
             json.dump(list(users), f)
 
-# 1. /start ሲባል የሚመጣ መነሻ
+# 3. /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    save_user(user.id) # ተጠቃሚውን ለብሮድካስት መዝግብ
+    save_user(user.id)
     
-    try:
-        await context.bot.send_message(
-            chat_id=ADMIN_CHAT_ID,
-            text=f"🔔 **አዲስ ተጠቃሚ ቦቱን ጀምሯል!**\n👤 ስም፦ {user.full_name}\nUsername: @{user.username if user.username else 'የለውም'}",
-            parse_mode='Markdown'
-        )
-    except Exception:
-        pass
-
     keyboard = [
         [InlineKeyboardButton("ኢትዮጵያ ውስጥ", callback_data='loc_ethiopia')],
         [InlineKeyboardButton("ከኢትዮጵያ ውጭ", callback_data='loc_abroad')]
@@ -70,7 +76,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.callback_query.message.delete()
         await context.bot.send_message(chat_id=update.callback_query.message.chat_id, text=msg_text, reply_markup=reply_markup)
 
-# 2. የአዝራሮች (Button) መጫን እንቅስቃሴን ማስተናገጃ
+# 4. Buttons handler
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -83,17 +89,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💬 Telegram Username: @awuli37"
         )
         keyboard = [[InlineKeyboardButton("⬅️ ተመለስ", callback_data='back_to_start')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text(text=text_abroad, reply_markup=reply_markup)
+        await query.edit_message_text(text=text_abroad, reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == 'loc_ethiopia':
-        keyboard = [
-            [InlineKeyboardButton("በመጀመሪያ የሚማሩትን ይምረጡ", callback_data='start_learning')]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text(text="አሁን እንዴት ልጀምር", reply_markup=reply_markup)
-
-    elif data == 'start_learning':
+        keyboard = [[InlineKeyboardButton("በመጀመሪያ የሚማሩትን ይምረጡ", callback_data='start_learning')]]
+        await query.edit_message_text(text="አሁን እንዴት ልጀምር", reply_markup=InlineKeyboardMarkup(keyboard))elif data == 'start_learning':
         keyboard = [
             [InlineKeyboardButton("ቅኔ", callback_data='qene')],
             [InlineKeyboardButton("ንባብ", callback_data='nibab')],
@@ -308,7 +308,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == 'back_to_start':
         await start(update, context)
 
-# 3. በየቀኑ አውቶማቲክ የሚላክ የመጽሐፍ ማስታወቂያ
+# 5. በየቀኑ አውቶማቲክ የሚላክ የመጽሐፍ ማስታወቂያ
 async def send_daily_ad(context: ContextTypes.DEFAULT_TYPE):
     users = load_users()
     ad_text = (
@@ -321,14 +321,14 @@ async def send_daily_ad(context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-# 4. የመምህሩ/የአድሚኑ አዲስ ማስታወቂያ መላኪያ command (/broadcast)
+# 6. የመምህሩ ብሮድካስት command (/broadcast)
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_CHAT_ID:
         return
     
     msg = update.message.text.replace("/broadcast", "").strip()
     if not msg:
-        await update.message.reply_text("እባክዎን ከመልእክቱ በፊት /broadcast ብለው ጽፈው ይላኩ።\nምሳሌ፦ `/broadcast አዲስ ማስታወቂያ...`", parse_mode='Markdown')
+        await update.message.reply_text("ከመጨረሻው ላይ /broadcast ካሉ በኋላ የማስታወቂያውን ጽሁፍ ጽፈው ይላኩ።")
         return
 
     users = load_users()
@@ -341,20 +341,24 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
     await update.message.reply_text(f"ማስታወቂያው ለ {count} ተጠቃሚዎች ተልኳል!")
 
-# 5. ተጠቃሚው የሚልከውን መረጃ (ጽሁፍ/ስክሪንሾት) ቀጥታ ወደ ኦነሩ Forward ማድረግ
+# 7. መረጃዎችን እና የክፍያ ስክሪንሾት ወደ አድሚን ማስተላለፊያ
 async def forward_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    save_user(update.effective_user.id)
+    user = update.effective_user
+    save_user(user.id)
     try:
         await context.bot.forward_message(
             chat_id=ADMIN_CHAT_ID,
             from_chat_id=update.message.chat_id,
             message_id=update.message.message_id
         )
-        await update.message.reply_text("መረጃዎ/የክፍያ ስክሪንሾትዎ ለኦነሩ ደርሷል! በቅርቡ ይገናኙዎታል።")
+        await update.message.reply_text("የላኩት መረጃ/የክፍያ ደረሰኝ ለአድሚኑ ደርሷል! በቅርቡ ያናግሩዎታል።")
     except Exception:
         await update.message.reply_text("መረጃውን መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።")
 
 def main():
+    # Render እንዳይዘጋ ሰርቨሩን ማስነሳት
+    keep_alive()
+
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -362,7 +366,7 @@ def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, forward_to_admin))
 
-    # በየቀኑ በኢትዮጵያ ሰዓት አቆጣጠር ጧት 3:00 ሰዓት (UTC 6:00 AM) አውቶማቲክ ማስታወቂያ መላኪያ Schedule
+    # በየቀኑ በኢትዮጵያ ሰዓት ጧት 3:00 ሰዓት (UTC 6:00 AM) ማስታወቂያ መላኪያ Schedule
     job_queue = app.job_queue
     eat_tz = pytz.timezone('Africa/Addis_Ababa')
     job_queue.run_daily(send_daily_ad, time=time(hour=9, minute=0, second=0, tzinfo=eat_tz))
