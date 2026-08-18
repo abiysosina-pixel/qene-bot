@@ -138,7 +138,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data='qene_registration')],
             [InlineKeyboardButton("⬅️ ተመለስ", callback_data='start_learning')]
         ]
-        reply_markup = InlineKeyboardMarkup(keyboard
+        reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(text=qene_text, reply_markup=reply_markup)
 
     elif data == 'nibab':
