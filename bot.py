@@ -103,7 +103,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text_abroad = (
             "ደውሉ ወይም ኢንቦክስ አድርጉ\n\n"
             "📞 Phone Number: 0915642585\n"
-            "💬 Telegram Username: @awuli37"
+            "💬 Telegram Username: @pawli37"
         )
         keyboard = [[InlineKeyboardButton("⬅️ ተመለስ", callback_data='back_to_start')]]
         await query.edit_message_text(text=text_abroad, reply_markup=InlineKeyboardMarkup(keyboard))
@@ -119,33 +119,210 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("ባሕረ ሃሳብ", callback_data='bahre_hasab')],
             [InlineKeyboardButton("ግእዝ ቋንቋ", callback_data='geez')]
         ]
-        await query.edit_message_text(text="በመጀመሪያ የሚማሩትን ይምረጡ", reply_markup=InlineKeyboardMarkup(keyboard))
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text="በመጀመሪያ የሚማሩትን ይምረጡ", reply_markup=reply_markup)
 
-    elif data in ['qene', 'nibab', 'bahre_hasab', 'geez']:
-        details = {
-            'qene': ("ቅኔ ውስጥ የሚማሩት፦\n\n👉 ቅኔ ዘረፋ፣ ቅኔነገራ...\n👉 የቅኔ ምራታ፣ ፍች፣ ርቃቄ...", 'qene_registration'),
-            'nibab': ("ንባብ ውስጥ የሚማሩት፦\n\n👉 የዘወትር ጸሎት\n👉 ውዳሴ ማርያም...", 'nibab_registration'),
-            'bahre_hasab': ("ባሕረ ሃሳብ ውስጥ የሚማሩት፦\n\n👉 ወንጌላውያን፣ መጥቅዕና አበቅቴ...", 'bahre_registration'),
-            'geez': ("ግእዝ ቋንቋ ውስጥ የሚማሩት፦\n\n👉 ነጠላ ግስና ርባታ፣ ነባር ስም...", 'geez_registration')
-        }
-        text, reg_target = details[data]
+    elif data == 'qene':
+        qene_text = (
+            "ቅኔ ውስጥ የሚማሩት፦\n\n"
+            "👉 ቅኔ ዘረፋ፣ ቅኔነገራ፣ ቅኔ ቅጸላ\n"
+            "👉 የቅኔ ምራታ፣ የቅኔ ፍች\n"
+            "👉 የቅኔ ርቃቄ፣ የቅኔ ሠምና ወርቅ\n"
+            "👉 የቅኔ ሙያ፣ ግስ ገሰሳ\n"
+            "👉 ግስ ርባታ፣ ነባር አንቀጽ ርባታ\n"
+            "👉 ታሪክ ትረካ፣ አገባብ ቅጸላ፣ ግስ ቅጸላ\n"
+            "👉 ነባር ቅጸላ፣ ቅኔ ጎዳና\n"
+            "👉 ርባታ ቅጸላ፣ ዜማ ልክ፣ ገቢር ተገብሮ"
+        )
         keyboard = [
-            [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data=reg_target)],
+            [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data='qene_registration')],
             [InlineKeyboardButton("⬅️ ተመለስ", callback_data='start_learning')]
         ]
-        await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard))
+        reply_markup = InlineKeyboardMarkup(keyboard
+        await query.edit_message_text(text=qene_text, reply_markup=reply_markup)
 
-    elif '_registration' in data:
-        form_text = (
-            "📜 **የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
+    elif data == 'nibab':
+        nibab_text = (
+            "ንባብ ውስጥ የሚማሩት፦\n\n"
+            "👉 የዘወትር ጸሎት\n"
+            "👉 ውዳሴ ማርያም\n"
+            "👉 አንቀጸ ብርሃን\n"
+            "👉 ይዌድስዋ መላእክት\n"
+            "👉 መልክዐ ማርያም\n"
+            "👉 መልክዐ ኢየሱስ\n"
+            "👉 መልክዐ ሚካኤል\n"
+            "👉 የወንጌል ንባብ\n"
+            "👉 መዝሙረ ዳዊት\n"
+            "👉 የግብረ ሐዋርያት ንባብ"
+        )
+        keyboard = [
+            [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data='nibab_registration')],
+            [InlineKeyboardButton("⬅️ ተመለስ", callback_data='start_learning')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=nibab_text, reply_markup=reply_markup)
+
+    elif data == 'bahre_hasab':
+        bahre_text = (
+            "ባሕረ ሃሳብ ውስጥ የሚማሩት፦\n\n"
+            "👉 ወንጌላውያን\n"
+            "👉 መጥቅዕና አበቅቴ\n"
+            "👉 መደብና ወንበር\n"
+            "👉 መባጃ ሐመርና ተውሳክ\n"
+            "👉 የአጽዋማትና በዓላት አወጣጥ\n"
+            "👉 ኢየአርግና ኢይወርድ\n"
+            "👉 ሠርቃት/አሥርቆት\n"
+            "👉 የብርሃናትና ነፋሳት አፈጣጠር\n"
+            "👉 ዓመተ ሰማዕታት\n"
+            "👉 ኬክሮስና ኬንትሮስ\n"
+            "👉 እና ሌሎችም ...."
+        )
+        keyboard = [
+            [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data='bahre_registration')],
+            [InlineKeyboardButton("⬅️ ተመለስ", callback_data='start_learning')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=bahre_text, reply_markup=reply_markup)
+
+    elif data == 'geez':
+        geez_text = (
+            "ግእዝ ቋንቋ ውስጥ የሚማሩት፦\n\n"
+            "👉 ከፊደላት ትርጕም ጀምሮ\n"
+            "👉 ነጠላ ግስና ርባታ\n"
+            "👉 ነባር ስም ቃላት\n"
+            "👉 አንቀጽና የአንቀጽ አይነቶች\n"
+            "👉 ገቢርና ተገብሮ\n"
+            "👉 ቅጽልና የቅጽል አይነቶች\n"
+            "👉 የዋህና መሠሪ ርባታ\n"
+            "👉 የንባባት ትርጉምና ርባታ\n"
+            "👉 የግእዝ ዐውዳዊ ፍች\n"
+            "👉 ከግእዝ ወደ ዐማርኛ መተርጐም\n"
+            "👉 ከዐማርኛ ወደ ግእዝ መተርጐም"
+        )
+        keyboard = [
+            [InlineKeyboardButton("አሁን እንዴት ልጀምር", callback_data='geez_registration')],
+            [InlineKeyboardButton("⬅️ ተመለስ", callback_data='start_learning')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=geez_text, reply_markup=reply_markup)
+
+    elif data == 'qene_registration':
+        qene_form_text = (
+            "📜 **ቅኔ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
+            "💵 **የክፍያ ሁኔታና መጠን፦**\n"
+            "• በቅድመ ክፍያ ነው\n"
+            "• የሀገር ውስጥ ተማሪ የ6 ወራት፦ **3,900 ብር**\n"
+            "• የዓመት፦ **7,500 ብር**\n\n"
+            "📚 **ትምህርቱ በ4 ዓይነት መንገድ ይሰጣል፦**\n"
+            "1. ቀጥታ በቴሌግራም\n"
+            "2. ቅጅ በመላክ\n"
+            "3. በጽሑፍ በመላክ\n"
+            "4. በስልክ\n\n"
             "🏦 **የመክፈያ ቦታ፦**\n"
-            "• **ንግድ ባንክ፦** `1000185120213` (ጳውሎስ ብርሃኔ ዘሪሁን)\n"
-            "• **አቢሲንያ ባንክ፦** `145908407` (ጳውሎስ ብርሃኔ ዘሪሁን)\n\n"
-            "➡️ ደረሰኙን/ስክሪንሾቱን እና መረጃዎን ይላኩልን።\n"
-            "1. ሙሉ ስም፦\n2. ስልክ ቁጥር፦\n3. Telegram Username፦ @\n4. Transaction ID፦"
+            "• **የኢትዮጵያ ንግድ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `1000185120213` (ጳውሎስ ብርሃኔ ዘሪሁን)\n"
+            "• **አቢሲንያ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `145908407` (ጳውሎስ ብርሃኔ ዘሪሁን)\n\n"
+            "➡️➡️➡️➡️➡️➡️\n"
+            "ደረሰኙን ፎቶ አንስተው ወይም ስክሪን ሹት ይላኩልኝ።\n\n"
+            "✍️ **እባክዎን የሚከተሉትን መረጃዎች ሞልተው ይላኩልን፦**\n"
+            "1. ሙሉ ስም (ከነአያት)፦\n"
+            "2. ስልክ ቁጥር፦\n"
+            "3. Telegram Username፦ @\n"
+            "4. አድራሻ (ከተማ/ክፍለ ከተማ)፦\n"
+            "5. የክፍያ ማረጋገጫ ቁጥር (Transaction ID / Ref No)፦\n\n"
+            "📞 **ለበለጠ መረጃ ይደውሉ፦** 0915642585"
         )
         keyboard = [[InlineKeyboardButton("⬅️ ወደ ዋናው ሜኑ", callback_data='back_to_start')]]
-        await query.edit_message_text(text=form_text, parse_mode='Markdown', reply_markup=InlineKeyboardMarkup(keyboard))
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=qene_form_text, parse_mode='Markdown', reply_markup=reply_markup)
+
+    elif data == 'nibab_registration':
+        nibab_form_text = (
+            "📖 **ንባብ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
+            "💵 **የክፍያ ሁኔታና መጠን፦**\n"
+            "• በቅድመ ክፍያ ነው\n"
+            "• የሀገር ውስጥ ተማሪ የ6 ወራት፦ **3,900 ብር**\n"
+            "• የዓመት፦ **7,500 ብር**\n\n"
+            "📚 **ትምህርቱ በ4 ዓይነት መንገድ ይሰጣል፦**\n"
+            "1. ቀጥታ በቴሌግራም\n"
+            "2. ቅጅ በመላክ\n"
+            "3. በጽሑፍ በመላክ\n"
+            "4. በስልክ\n\n"
+            "🏦 **የመክፈያ ቦታ፦**\n"
+            "• **የኢትዮጵያ ንግድ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `1000185120213` (ጳውሎስ ብርሃኔ ዘሪሁን)\n"
+            "• **አቢሲንያ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `145908407` (ጳውሎስ ብርሃኔ ዘሪሁን)\n\n"
+            "➡️➡️➡️➡️➡️➡️\n"
+            "ደረሰኙን ፎቶ አንስተው ወይም ስክሪን ሹት ይላኩልኝ።\n\n"
+            "✍️ **እባክዎን የሚከተሉትን መረጃዎች ሞልተው ይላኩልን፦**\n"
+            "1. ሙሉ ስም (ከነአያት)፦\n"
+            "2. ስልክ ቁጥር፦\n"
+            "3. Telegram Username፦ @\n"
+            "4. አድራሻ (ከተማ/ክፍለ ከተማ)፦\n"
+            "5. የክፍያ ማረጋገጫ ቁጥር (Transaction ID / Ref No)፦\n\n"
+            "📞 **ለበለጠ መረጃ ይደውሉ፦** 0915642585"
+        )
+        keyboard = [[InlineKeyboardButton("⬅️ ወደ ዋናው ሜኑ", callback_data='back_to_start')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=nibab_form_text, parse_mode='Markdown', reply_markup=reply_markup)
+
+    elif data == 'bahre_registration':
+        bahre_form_text = (
+            "🗓 **ባሕረ ሃሳብ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
+            "💵 **ዋጋ፦** ወራዊ ክፍያ 600 + መመዝገቢያ 300 = **900 ብር**\n\n"
+            "📚 **ትምህርቱ በ4 ዓይነት መንገድ ይሰጣል፦**\n"
+            "1. ቀጥታ በቴሌግራም\n"
+            "2. ቅጅ በመላክ\n"
+            "3. በጽሑፍ በመላክ\n"
+            "4. በስልክ\n\n"
+            "🏦 **የመክፈያ ቦታ፦**\n"
+            "• **የኢትዮጵያ ንግድ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `1000185120213` (ጳውሎስ ብርሃኔ ዘሪሁን)\n"
+            "• **አቢሲንያ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `145908407` (ጳውሎስ ብርሃኔ ዘሪሁን)\n\n"
+            "➡️➡️➡️➡️➡️➡️\n"
+            "ደረሰኙን ፎቶ አንስተው ወይም ስክሪን ሹት ይላኩልኝ።\n\n"
+            "✍️ **እባክዎን የሚከተሉትን መረጃዎች ሞልተው ይላኩልን፦**\n"
+            "1. ሙሉ ስም (ከነአያት)፦\n"
+            "2. ስልክ ቁጥር፦\n"
+            "3. Telegram Username፦ @\n"
+            "4. አድራሻ (ከተማ/ክፍለ ከተማ)፦\n"
+            "5. የክፍያ ማረጋገጫ ቁጥር (Transaction ID / Ref No)፦\n\n"
+            "📞 **ለበለጠ መረጃ ይደውሉ፦** 0915642585"
+        )
+        keyboard = [[InlineKeyboardButton("⬅️ ወደ ዋናው ሜኑ", callback_data='back_to_start')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=bahre_form_text, parse_mode='Markdown', reply_markup=reply_markup)
+
+    elif data == 'geez_registration':
+        geez_form_text = (
+            "🔤 **ግዕዝ ቋንቋ — የመመዝገቢያ እና የክፍያ ፎርም**\n\n"
+            "💵 **ዋጋ፦** ወራዊ ክፍያ 600 + መመዝገቢያ 300 = **900 ብር**\n\n"
+            "📚 **ትምህርቱ በ4 ዓይነት መንገድ ይሰጣል፦**\n"
+            "1. ቀጥታ በቴሌግራም\n"
+            "2. ቅጅ በመላክ\n"
+            "3. በጽሑፍ በመላክ\n"
+            "4. በስልክ\n\n"
+            "🏦 **የመክፈያ ቦታ፦**\n"
+            "• **የኢትዮጵያ ንግድ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `1000185120213` (ጳውሎስ ብርሃኔ ዘሪሁን)\n"
+            "• **አቢሲንያ ባንክ**\n"
+            "  አካውንት ቁጥር፦ `145908407` (ጳውሎስ ብርሃኔ ዘሪሁን)\n\n"
+            "➡️➡️➡️➡️➡️➡️\n"
+            "ደረሰኙን ፎቶ አንስተው ወይም ስክሪን ሹት ይላኩልኝ።\n\n"
+            "✍️ **እባክዎን የሚከተሉትን መረጃዎች ሞልተው ይላኩልን፦**\n"
+            "1. ሙሉ ስም (ከነአያት)፦\n"
+            "2. ስልክ ቁጥር፦\n"
+            "3. Telegram Username፦ @\n"
+            "4. አድራሻ (ከተማ/ክፍለ ከተማ)፦\n"
+            "5. የክፍያ ማረጋገጫ ቁጥር (Transaction ID / Ref No)፦\n\n"
+            "📞 **ለበለጠ መረጃ ይደውሉ፦** 0915642585"
+        )
+        keyboard = [[InlineKeyboardButton("⬅️ ወደ ዋናው ሜኑ", callback_data='back_to_start')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text=geez_form_text, parse_mode='Markdown', reply_markup=reply_markup)
 
     elif data == 'back_to_start':
         await start(update, context)
@@ -155,7 +332,7 @@ async def send_daily_ad(context: ContextTypes.DEFAULT_TYPE):
     users = load_users()
     ad_text = (
         "📚 **የመጽሐፍ ማስታወቂያ**\n\n"
-        "የመምህሩ አዲስ መጽሐፍ ለሽያጭ ቀርቧል! ለመግዛትና ለበለጠ መረጃ በስልክ ቁጥር 0915642585 ይደውሉ ወይም @awuli37 ያግኙን።"
+        "የመምህሩ አዲስ መጽሐፍ ለሽያጭ ቀርቧል! ለመግዛትና ለበለጠ መረጃ በስልክ ቁጥር 0915642585 ይደውሉ ወይም @pawli37 ያግኙን።"
     )
     for u_id in users:
         try:
