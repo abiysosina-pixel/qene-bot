@@ -38,31 +38,48 @@ logging.basicConfig(
 )
 
 BOT_TOKEN = "8866935970:AAGr1LED7cmOpgvaSZbTdlcbQ-ouyxvg99s"
-ADMIN_CHAT_ID = 6720784698
-
-USERS_FILE = "users.json"
-
-def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "r") as f:
-            try:
-                return set(json.load(f))
-            except Exception:
-                return set()
-    return set()
+ADMIN_CHAT_ID = 1001745313
+# ፋይል ሳያስፈልግ ተጠቃሚዎችን በሜሞሪ (RAM) ብቻ መያዣ
+users = set()
 
 def save_user(user_id):
-    users = load_users()
-    if user_id not in users:
-        users.add(user_id)
-        with open(USERS_FILE, "w") as f:
-            json.dump(list(users), f)
+    try:
+        users = load_users()
+        if user_id not in users:
+            users.add(user_id)
+            with open(USERS_FILE, "w") as f:
+                json.dump(list(users), f)
+    except Exception as e:
+        logging.error(f"User ID ማስቀመጥ አልተቻለም፦ {e}")
 
 # 3. /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    save_user(user.id)
+    try:
+        user = update.effective_user
+        if user:
+            save_user(user.id)
+    except Exception:
+        pass
+
+    keyboard = [
+        [InlineKeyboardButton("ኢትዮጵያ ውስጥ", callback_data='loc_ethiopia')],
+        [InlineKeyboardButton("ከኢትዮጵያ ውጭ", callback_data='loc_abroad')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    msg_text = "የሚኖሩበትን ቦታ ይምረጡ፦"
     
+    try:
+        if update.message:
+            await update.message.reply_text(msg_text, reply_markup=reply_markup)
+        elif update.callback_query:
+            await update.callback_query.message.delete()
+            await context.bot.send_message(
+                chat_id=update.callback_query.message.chat_id, 
+                text=msg_text, 
+                reply_markup=reply_markup
+            )
+    except Exception as e:
+        logging.error(f"Start መልእክት መላክ አልተቻለም፦ {e}")
     keyboard = [
         [InlineKeyboardButton("ኢትዮጵያ ውስጥ", callback_data='loc_ethiopia')],
         [InlineKeyboardButton("ከኢትዮጵያ ውጭ", callback_data='loc_abroad')]
