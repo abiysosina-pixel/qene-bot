@@ -37,7 +37,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-BOT_TOKEN = "8866935970:AAGr1LED7cmOpgvaSZbTdlcbQ-ouyxvg99s"
+BOT_TOKEN = "8866935970:AAFR7YhTGwATj5upd07i6-JVxA7pvfVOeYE"
 ADMIN_CHAT_ID = 1001745313
 # ፋይል ሳያስፈልግ ተጠቃሚዎችን በሜሞሪ (RAM) ብቻ መያዣ
 users = set()
